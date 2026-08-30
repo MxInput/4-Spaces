@@ -6,18 +6,25 @@
 #define ROW_SIZE 6
 #define COL_SIZE 7
 
-struct Pos {
-    int row, col;
-};
+bool is_playing = true;
 
-void createBoard() {
-
+void createBoard(char board[ROW_SIZE][COL_SIZE]) {
+    for (int row = 0; row < ROW_SIZE; row++) {
+        for (int col = 0; col < COL_SIZE; col++) {
+            if (board[row][col] == COM_MOVE || board[row][col] == USER_MOVE)
+                printf(board[row][col]);
+            if (col == 0)
+                printf("| ");
+            else 
+                printf(" |");
+        }
+        printf("\n");
+    }
 }
 
 void start() {
     bool made_choice = false;
-    bool is_playing = false;
-
+    
     char option;
     int output;
 
@@ -36,6 +43,7 @@ void start() {
         {
             printf("Game Ended! Goodbye!\n");
             made_choice = true;
+            is_playing = false;
         }
         else
             printf("Invalid Option: Try Again!\n");
@@ -43,15 +51,23 @@ void start() {
 }
 
 void instruct() {
-
-    printf("Enter the row you'd like to be in.\n\n");
+    printf("Your Turn!\n");
     printf("Enter the column you'd like to be in.\n\n");
 }
 
 void playGame() {
     char board[ROW_SIZE][COL_SIZE];
 
-    start();
+    while (is_playing) {
+        start();
+
+        if (!is_playing)
+            break;
+        
+        createBoard();
+
+        instruct();
+    }
 }
 
 int main(void) 
