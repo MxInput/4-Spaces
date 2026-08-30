@@ -133,6 +133,146 @@ void AITurn() {
     findBestMove();
 }
 
+char isWinner(char board[ROW_SIZE][COL_SIZE]) {
+    for (int row = 0; row < ROW_SIZE; row++) {
+        int num_com = 0;
+        int num_user = 0;
+
+        for (int col = 0; col < COL_SIZE; col++) {
+            char space = board[row][col];
+
+            if (space == COM_MOVE)
+                num_com++;
+            if (space == USER_MOVE)
+                num_user++;
+        }
+
+        if (num_com >= 4) 
+            return COM_MOVE;
+        if (num_user >= 4) 
+            return USER_MOVE;
+    }
+
+    for (int col = 0; col < COL_SIZE; col++) {
+        int num_com = 0;
+        int num_user = 0;
+
+        for (int row = 0; row < ROW_SIZE; row++) {
+            char space = board[row][col];
+
+            if (space == COM_MOVE)
+                num_com++;
+            if (space == USER_MOVE)
+                num_user++;
+        }
+
+        if (num_com >= 4) 
+            return COM_MOVE;
+        if (num_user >= 4) 
+            return USER_MOVE;
+    }
+
+    for (int row = 0; row < ROW_SIZE - 3; row++) {
+        for (int col = 0; col < COL_SIZE; col++) {
+            int num_com = 0;
+            int num_user = 0;
+
+            char space = board[row][col];
+            
+            if (space == COM_MOVE)
+                num_com++;
+            else if (space == USER_MOVE)
+                num_user++;
+
+            if (col + 1 < COL_SIZE && row + 1 < ROW_SIZE)
+                space = board[row + 1][col + 1];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (col + 2 < COL_SIZE && row + 2 < ROW_SIZE)
+                space = board[row + 2][col + 2];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (col + 3 < COL_SIZE && row + 3 < ROW_SIZE)
+                space = board[row + 3][col + 3];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (num_com >= 4)
+                return COM_MOVE;
+            else if (num_user >= 4)
+                return USER_MOVE;
+        }
+    }
+
+    for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row++) {
+        for (int col = 0; col < COL_SIZE; col++) {
+            int num_com = 0;
+            int num_user = 0;
+
+            char space = board[row][col];
+            
+            if (space == COM_MOVE)
+                num_com++;
+            else if (space == USER_MOVE)
+                num_user++;
+
+            if (col - 1 < COL_SIZE && row - 1 < ROW_SIZE)
+                space = board[row - 1][col - 1];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (col - 2 < COL_SIZE && row - 2 < ROW_SIZE)
+                space = board[row - 2][col - 2];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (col - 3 < COL_SIZE && row - 3 < ROW_SIZE)
+                space = board[row - 3][col - 3];
+
+                if (space == COM_MOVE)
+                    num_com++;
+                else if (space == USER_MOVE)
+                    num_user++;
+            else
+                continue;
+
+            if (num_com >= 4)
+                return COM_MOVE;
+            else if (num_user >= 4)
+                return USER_MOVE;
+        }
+    }
+
+    return ' ';
+}
+
 void resetBoard(char (*board)[COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE; row++) {
         for (int col = 0; col < COL_SIZE; col++) { 
@@ -163,8 +303,21 @@ void playGame() {
             instruct();
             pickCol(board);
 
-            if (allFilled())
+            char winner_status = isWinner(board);
+
+            if (winner_status == USER_MOVE){
+                printf("You Win!");
                 break;
+            }
+
+            if (allFilled())
+                printf("Board All Filled!");
+                break;
+
+            if (winner_status == COM_MOVE){
+                printf("COM Wins!");
+                break;
+            }
 
             count++;
 
