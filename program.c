@@ -60,7 +60,7 @@ void instruct() {
     printf("Enter the column you'd like to be in.\n\n");
 }
 
-void pickCol(char board[ROW_SIZE][COL_SIZE]) {
+void pickCol(char (*board)[COL_SIZE]) {
     bool invalid_column = true;
     int picked_col;
 
@@ -68,9 +68,10 @@ void pickCol(char board[ROW_SIZE][COL_SIZE]) {
     {
         scanf(" %i", &picked_col);
 
-        for (int row = 0; row < ROW_SIZE; row++) {
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
             if (board[row][picked_col] != COM_MOVE && board[row][picked_col] != USER_MOVE) {
                 invalid_column = false;
+                board[row][picked_col] = USER_MOVE;
                 break;
             }
         }
@@ -78,8 +79,15 @@ void pickCol(char board[ROW_SIZE][COL_SIZE]) {
         if (!invalid_column)
             break;
 
-        printf("This column is filled! Pick another!");
+        printf("This column is filled! Pick another!\n");
     }
+    
+}
+
+void AITurn() {
+    printf("\n");
+    printf("COM Turn!\n");
+
     
 }
 
@@ -101,10 +109,22 @@ void playGame() {
         if (!is_playing)
             break;
         
-        createBoard(board);
+        bool not_finished = true;
 
-        instruct();
-        pickCol(board);
+        int count = 0;
+
+        while (not_finished) {
+            createBoard(board);
+
+            instruct();
+            pickCol(board);
+
+            count++;
+
+            if (count >= 30) {
+                not_finished = false;
+            }
+        }
     }
 }
 
