@@ -7,6 +7,7 @@
 #define COL_SIZE 7
 
 bool is_playing = true;
+int num_spaces;
 
 void createBoard(char board[ROW_SIZE][COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE + 1; row++) {
@@ -82,21 +83,64 @@ void pickCol(char (*board)[COL_SIZE]) {
         printf("This column is filled! Pick another!\n");
     }
     
+    num_spaces--;
+}
+
+bool allFilled() {
+    if (num_spaces > 0) 
+        return true;
+    return false;
+}
+
+void findBestMove(char (*board)[COL_SIZE]) {
+    int picked_row;
+    int best_col = -1;
+    int best_value = -1;
+
+    for (int col = 0; col < COL_SIZE; col++) {
+        int possible_row = -1;
+
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
+            char current_space = board[row][col];
+
+            if (current_space == ' ')
+                possible_row = row;
+        }
+
+        if (possible_row == -1)
+            continue;
+        
+        int current_space_value = findValue(board, col);
+        
+        if (current_space_value > best_value) {
+            best_col = col;
+            picked_row = possible_row;
+        }
+    }   
+
+    board[picked_row][best_col] = COM_MOVE;
+    num_spaces--;
+}
+
+int findValue(char board[ROW_SIZE][COL_SIZE], int chosen_col) {
+    return 0;
 }
 
 void AITurn() {
     printf("\n");
     printf("COM Turn!\n");
 
-    
+    findBestMove();
 }
 
-void resetBoard(char board[ROW_SIZE][COL_SIZE]) {
+void resetBoard(char (*board)[COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE; row++) {
         for (int col = 0; col < COL_SIZE; col++) { 
             board[row][col] = ' ';
         }
     }
+
+    num_spaces = ROW_SIZE * COL_SIZE;
 }
 
 void playGame() {
@@ -118,6 +162,9 @@ void playGame() {
 
             instruct();
             pickCol(board);
+
+            if (allFilled())
+                break;
 
             count++;
 
