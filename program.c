@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #define COM_MOVE 'O'
@@ -7,6 +8,7 @@
 #define COL_SIZE 7
 
 bool is_playing = true;
+bool random_AI = false;
 int num_spaces;
 
 void createBoard(char board[ROW_SIZE][COL_SIZE]) {
@@ -54,6 +56,29 @@ void start() {
         else
             printf("Invalid Option: Try Again!\n");
     }
+
+    made_choice = false;
+
+    printf("Would you like to play against easy or hard AI? (E/H)\n");
+    
+    while (!made_choice) {
+        scanf(" %c", &option);
+
+        if (option == 'E' || option == 'e') 
+        {
+            printf("The AI will be easy.\n");
+            made_choice = true;
+            random_AI = true;
+        }
+        else if (option == 'H' || option == 'h') 
+        {
+            printf("The AI will be hard.\n");
+            made_choice = true;
+            random_AI = false;
+        }
+        else
+            printf("Invalid Option: Try Again!\n");
+    }
 }
 
 void instruct() {
@@ -87,11 +112,40 @@ void pickCol(char (*board)[COL_SIZE]) {
 }
 
 bool allFilled() {
-    if (num_spaces > 0) 
+    if (num_spaces <= 0) 
         return true;
     return false;
 }
 
+void findRandomMove(char (*board)[COL_SIZE]) {
+    int possible_cols[COL_SIZE];
+    int picked_row = -1;
+    int randCol;
+
+    for (int col = 0; col < COL_SIZE; col++) {
+        int possible_row = -1;
+
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
+            char current_space = board[row][col];
+
+            if (current_space == ' ')
+                possible_row = row;
+        }
+
+        possible_cols[col] = possible_row;
+    }   
+
+    while (picked_row == -1) {
+        randCol = rand() % COL_SIZE;
+        picked_row = possible_cols[randCol];
+    }
+
+    board[randCol][picked_row] = COM_MOVE;
+    
+    num_spaces--;
+}
+
+/*
 void findBestMove(char (*board)[COL_SIZE]) {
     int picked_row;
     int best_col = -1;
@@ -121,16 +175,22 @@ void findBestMove(char (*board)[COL_SIZE]) {
     board[picked_row][best_col] = COM_MOVE;
     num_spaces--;
 }
+*/
+
+void findBestMove(char (*board)[COL_SIZE]) {}
 
 int findValue(char board[ROW_SIZE][COL_SIZE], int chosen_col) {
     return 0;
 }
 
-void AITurn() {
+void AITurn(char (*board)[COL_SIZE]) {
     printf("\n");
     printf("COM Turn!\n");
 
-    findBestMove();
+    if (random_AI) 
+        findRandomMove(board);
+    else 
+        findBestMove(board);
 }
 
 char isWinner(char board[ROW_SIZE][COL_SIZE]) {
@@ -221,7 +281,7 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
         }
     }
 
-    for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row++) {
+    for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row--) {
         for (int col = 0; col < COL_SIZE; col++) {
             int num_com = 0;
             int num_user = 0;
@@ -295,8 +355,6 @@ void playGame() {
         
         bool not_finished = true;
 
-        int count = 0;
-
         while (not_finished) {
             createBoard(board);
 
@@ -306,24 +364,31 @@ void playGame() {
             char winner_status = isWinner(board);
 
             if (winner_status == USER_MOVE){
-                printf("You Win!");
+                not_finished = false;
+                printf("You Win!\n\n");
+                break;
+            }
+
+            printf("%i", num_spaces);
+            if (allFilled())
+                not_finished = false;
+                printf("There are no more empty spaces! The game will restart.\n\n");
+                break;
+
+            AITurn(board);
+
+            winner_status = isWinner(board);
+
+            if (winner_status == COM_MOVE){
+                not_finished = false;
+                printf("COM Wins!\n\n");
                 break;
             }
 
             if (allFilled())
-                printf("Board All Filled!");
-                break;
-
-            if (winner_status == COM_MOVE){
-                printf("COM Wins!");
-                break;
-            }
-
-            count++;
-
-            if (count >= 30) {
                 not_finished = false;
-            }
+                printf("There are no more empty spaces! The game will restart.\n\n");
+                break;
         }
     }
 }
