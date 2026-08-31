@@ -114,7 +114,7 @@ void pickCol(char (*board)[COL_SIZE]) {
 void findRandomMove(char (*board)[COL_SIZE]) {
     int possible_cols[COL_SIZE];
     int picked_row = -1;
-    int randCol;
+    int rand_col = -1;
 
     for (int col = 0; col < COL_SIZE; col++) {
         int possible_row = -1;
@@ -122,19 +122,22 @@ void findRandomMove(char (*board)[COL_SIZE]) {
         for (int row = ROW_SIZE - 1; row >= 0; row--) {
             char current_space = board[row][col];
 
-            if (current_space == ' ')
+            if (current_space == ' ') 
+            {
                 possible_row = row;
+                break;
+            }  
         }
 
         possible_cols[col] = possible_row;
     }   
 
     while (picked_row == -1) {
-        randCol = rand() % COL_SIZE;
-        picked_row = possible_cols[randCol];
+        rand_col = rand() % COL_SIZE;
+        picked_row = possible_cols[rand_col];
     }
 
-    board[randCol][picked_row] = COM_MOVE;
+    board[picked_row][rand_col] = COM_MOVE;
     
     num_spaces--;
 }
@@ -195,16 +198,24 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
         for (int col = 0; col < COL_SIZE; col++) {
             char space = board[row][col];
 
-            if (space == COM_MOVE)
+            if (space == COM_MOVE) {
+                num_user = 0;
                 num_com++;
-            if (space == USER_MOVE)
+            }
+            else if (space == USER_MOVE) {
+                num_com = 0;
                 num_user++;
+            }   
+            else if (space == ' ') {
+                num_user = 0;
+                num_com = 0;
+            }
+                
+            if (num_com >= 4) 
+                return COM_MOVE;
+            if (num_user >= 4) 
+                return USER_MOVE;
         }
-
-        if (num_com >= 4) 
-            return COM_MOVE;
-        if (num_user >= 4) 
-            return USER_MOVE;
     }
 
     for (int col = 0; col < COL_SIZE; col++) {
@@ -214,16 +225,24 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
         for (int row = 0; row < ROW_SIZE; row++) {
             char space = board[row][col];
 
-            if (space == COM_MOVE)
+            if (space == COM_MOVE) {
+                num_user = 0;
                 num_com++;
-            if (space == USER_MOVE)
+            }
+            if (space == USER_MOVE) {
+                num_com = 0;
                 num_user++;
-        }
+            }
+            if (space == ' ') {
+                num_user = 0;
+                num_com = 0;
+            }
 
-        if (num_com >= 4) 
-            return COM_MOVE;
-        if (num_user >= 4) 
-            return USER_MOVE;
+            if (num_com >= 4) 
+                return COM_MOVE;
+            if (num_user >= 4) 
+                return USER_MOVE;
+        }
     }
 
     for (int row = 0; row < ROW_SIZE - 3; row++) {
@@ -238,33 +257,36 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
             else if (space == USER_MOVE)
                 num_user++;
 
-            if (col + 1 < COL_SIZE && row + 1 < ROW_SIZE)
+            if (col + 1 < COL_SIZE && row + 1 < ROW_SIZE) {
                 space = board[row + 1][col + 1];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }  
             else
                 continue;
 
-            if (col + 2 < COL_SIZE && row + 2 < ROW_SIZE)
+            if (col + 2 < COL_SIZE && row + 2 < ROW_SIZE) {
                 space = board[row + 2][col + 2];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }
             else
                 continue;
 
-            if (col + 3 < COL_SIZE && row + 3 < ROW_SIZE)
+            if (col + 3 < COL_SIZE && row + 3 < ROW_SIZE) {
                 space = board[row + 3][col + 3];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }
             else
                 continue;
 
@@ -287,33 +309,36 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
             else if (space == USER_MOVE)
                 num_user++;
 
-            if (col - 1 < COL_SIZE && row - 1 < ROW_SIZE)
+            if (col - 1 < COL_SIZE && row - 1 < ROW_SIZE) {
                 space = board[row - 1][col - 1];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }
             else
                 continue;
 
-            if (col - 2 < COL_SIZE && row - 2 < ROW_SIZE)
+            if (col - 2 < COL_SIZE && row - 2 < ROW_SIZE) {
                 space = board[row - 2][col - 2];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }
             else
                 continue;
 
-            if (col - 3 < COL_SIZE && row - 3 < ROW_SIZE)
+            if (col - 3 < COL_SIZE && row - 3 < ROW_SIZE) {
                 space = board[row - 3][col - 3];
 
                 if (space == COM_MOVE)
                     num_com++;
                 else if (space == USER_MOVE)
                     num_user++;
+            }
             else
                 continue;
 
