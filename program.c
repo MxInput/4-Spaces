@@ -150,6 +150,9 @@ void findBestMove(char (*board)[COL_SIZE]) {
         int start_com = -1;
         int start_user = -1;
 
+        int end_com = -1;
+        int end_user = -1;
+
         for (int col = 0; col < COL_SIZE; col++) {
             char space = board[row][col];
 
@@ -158,7 +161,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 num_com++;
 
                 if (start_com == -1) {
-                    start_com = col;
+                    start_com = col - 1;
                 }
 
                 start_user = -1;
@@ -168,7 +171,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 num_user++;
                 
                 if (start_user == -1) {
-                    start_user = col;
+                    start_user = col - 1;
                 }
 
                 start_com = -1;
@@ -179,10 +182,48 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
                 
             if (num_com >= 3) {
-                return COM_MOVE;
+                end_com = col + 1;
+                char space;
+
+                if (start_com >= 0) {
+                    space = board[row][start_com];
+
+                    if (space == ' ') {
+                        board[row][start_com] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_com < COL_SIZE) {
+                    space = board[row][end_com];
+
+                    if (space == ' ') {
+                        board[row][end_com] = COM_MOVE;
+                        return;
+                    }
+                }
             } 
             if (num_user >= 3) {
-                return USER_MOVE;
+                end_user = col + 1;
+                char space;
+
+                if (start_user >= 0) {
+                    space = board[row][start_user];
+
+                    if (space == ' ') {
+                        board[row][start_user] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_user < COL_SIZE) {
+                    space = board[row][end_user];
+
+                    if (space == ' ') {
+                        board[row][end_user] = COM_MOVE;
+                        return;
+                    }
+                }
             }
         }
     }
@@ -191,26 +232,84 @@ void findBestMove(char (*board)[COL_SIZE]) {
         int num_com = 0;
         int num_user = 0;
 
+        int start_com = -1;
+        int start_user = -1;
+
+        int end_com = -1;
+        int end_user = -1;
+
         for (int row = 0; row < ROW_SIZE; row++) {
             char space = board[row][col];
 
             if (space == COM_MOVE) {
                 num_user = 0;
                 num_com++;
+
+                if (start_com == -1) {
+                    start_com = col - 1;
+                }
+
+                start_user = -1;
             }
-            if (space == USER_MOVE) {
+            else if (space == USER_MOVE) {
                 num_com = 0;
                 num_user++;
-            }
-            if (space == ' ') {
+                
+                if (start_user == -1) {
+                    start_user = col - 1;
+                }
+
+                start_com = -1;
+            }   
+            else if (space == ' ') {
                 num_user = 0;
                 num_com = 0;
             }
+                
+            if (num_com >= 3) {
+                end_com = col + 1;
+                char space;
 
-            if (num_com >= 4) 
-                return COM_MOVE;
-            if (num_user >= 4) 
-                return USER_MOVE;
+                if (start_com >= 0) {
+                    space = board[row][start_com];
+
+                    if (space == ' ') {
+                        board[row][start_com] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_com < COL_SIZE) {
+                    space = board[row][end_com];
+
+                    if (space == ' ') {
+                        board[row][end_com] = COM_MOVE;
+                        return;
+                    }
+                }
+            } 
+            if (num_user >= 3) {
+                end_user = col + 1;
+                char space;
+
+                if (start_user >= 0) {
+                    space = board[row][start_user];
+
+                    if (space == ' ') {
+                        board[row][start_user] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_user < COL_SIZE) {
+                    space = board[row][end_user];
+
+                    if (space == ' ') {
+                        board[row][end_user] = COM_MOVE;
+                        return;
+                    }
+                }
+            }
         }
     }
 
@@ -219,20 +318,68 @@ void findBestMove(char (*board)[COL_SIZE]) {
             int num_com = 0;
             int num_user = 0;
 
+            int start_com_row = -1;
+            int start_com_col = -1;
+
+            int start_user_row = -1;
+            int start_user_col = -1;
+
+            int end_com_row = -1;
+            int end_com_col = -1;
+
+            int end_user_row = -1;
+            int end_user_col = -1;
+
             char space = board[row][col];
             
-            if (space == COM_MOVE)
+            if (space == COM_MOVE) {
+                start_com_row = row - 1;
+                start_com_col = col - 1;
+                
                 num_com++;
-            else if (space == USER_MOVE)
-                num_user++;
+            }
+            else if (space == USER_MOVE) {
+                start_user_row = row - 1;
+                start_user_col = col - 1;
 
+                num_user++;
+            }
+            else {
+                return;
+            }
+            
             if (col + 1 < COL_SIZE && row + 1 < ROW_SIZE) {
                 space = board[row + 1][col + 1];
 
-                if (space == COM_MOVE)
+                if (space == COM_MOVE) {
+                    start_user_row = 0;
+                    start_user_col = 0;
+
+                    if (start_com_row == -1 && start_com_col == -1) {
+                        start_com_row = row - 1;
+                        start_com_col = col - 1;
+                    }
+
                     num_com++;
-                else if (space == USER_MOVE)
+                }
+                else if (space == USER_MOVE) {
+                    start_com_row = 0;
+                    start_com_col = 0;
+
+                    if (start_user_row == -1 && start_user_col == -1) {
+                        start_user_row = row - 1;
+                        start_user_col = col - 1;
+                    }
+
                     num_user++;
+                }
+                else {
+                    start_user_row = 0;
+                    start_user_col = 0;
+
+                    start_com_row = 0;
+                    start_com_col = 0;
+                }
             }  
             else
                 continue;
@@ -240,24 +387,82 @@ void findBestMove(char (*board)[COL_SIZE]) {
             if (col + 2 < COL_SIZE && row + 2 < ROW_SIZE) {
                 space = board[row + 2][col + 2];
 
-                if (space == COM_MOVE)
+                if (space == COM_MOVE) {
+                    start_user_row = 0;
+                    start_user_col = 0;
+
+                    if (start_com_row == -1 && start_com_col == -1) {
+                        start_com_row = row - 1;
+                        start_com_col = col - 1;
+                    }
+
                     num_com++;
-                else if (space == USER_MOVE)
+                }
+                else if (space == USER_MOVE) {
+                    start_com_row = 0;
+                    start_com_col = 0;
+
+                    if (start_user_row == -1 && start_user_col == -1) {
+                        start_user_row = row - 1;
+                        start_user_col = col - 1;
+                    }
+
                     num_user++;
-            }
+                }
             else
                 continue;
+                
+            if (num_com >= 3) {
+                end_com = col + 1;
+                char space;
 
-            if (col + 3 < COL_SIZE && row + 3 < ROW_SIZE) {
-                space = board[row + 3][col + 3];
+                if (start_com >= 0) {
+                    space = board[row][start_com];
 
-                if (space == COM_MOVE)
-                    num_com++;
-                else if (space == USER_MOVE)
-                    num_user++;
+                    if (space == ' ') {
+                        board[row][start_com] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_com < COL_SIZE) {
+                    space = board[row][end_com];
+
+                    if (space == ' ') {
+                        board[row][end_com] = COM_MOVE;
+                        return;
+                    }
+                }
+            } 
+            if (num_user >= 3) {
+                end_user = col + 1;
+                char space;
+
+                if (start_user >= 0) {
+                    space = board[row][start_user];
+
+                    if (space == ' ') {
+                        board[row][start_user] = COM_MOVE;
+                        return;
+                    }
+                }
+
+                if (end_user < COL_SIZE) {
+                    space = board[row][end_user];
+
+                    if (space == ' ') {
+                        board[row][end_user] = COM_MOVE;
+                        return;
+                    }
+                }
             }
-            else
-                continue;
+            
+            if (space == COM_MOVE)
+                num_com++;
+            else if (space == USER_MOVE)
+                num_user++;
+
+            
 
             if (num_com >= 4)
                 return COM_MOVE;
@@ -420,6 +625,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }                
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }  
             else
@@ -435,6 +644,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }                
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }
             else
@@ -450,6 +663,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }                
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }
             else
@@ -488,6 +705,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }                
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }
             else
@@ -503,6 +724,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }                
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }
             else
@@ -518,6 +743,10 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 else if (space == USER_MOVE){
                     num_user++;
                     num_com = 0;
+                }
+                else {
+                    num_com = 0;
+                    num_user = 0;
                 }
             }
             else
