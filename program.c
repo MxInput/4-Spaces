@@ -9,7 +9,7 @@
 
 bool is_playing = true;
 bool random_AI = false;
-int num_spaces;
+int num_spaces = 0;
 
 void createBoard(char board[ROW_SIZE][COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE + 1; row++) {
@@ -109,12 +109,6 @@ void pickCol(char (*board)[COL_SIZE]) {
     }
     
     num_spaces--;
-}
-
-bool allFilled() {
-    if (num_spaces <= 0) 
-        return true;
-    return false;
 }
 
 void findRandomMove(char (*board)[COL_SIZE]) {
@@ -369,11 +363,11 @@ void playGame() {
                 break;
             }
 
-            printf("%i", num_spaces);
-            if (allFilled())
+            if (num_spaces <= 0 == true) {
                 not_finished = false;
                 printf("There are no more empty spaces! The game will restart.\n\n");
                 break;
+            }
 
             AITurn(board);
 
@@ -385,10 +379,12 @@ void playGame() {
                 break;
             }
 
-            if (allFilled())
+            if (num_spaces <= 0 == true) {
                 not_finished = false;
                 printf("There are no more empty spaces! The game will restart.\n\n");
                 break;
+            }
+                
         }
     }
 }
