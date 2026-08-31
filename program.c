@@ -59,7 +59,7 @@ void start() {
 
     made_choice = false;
 
-    printf("Would you like to play against easy or hard AI? (E/H)\n");
+    printf("Would you like to play against easy or slightly smarter AI? (E/S)\n");
     
     while (!made_choice) {
         scanf(" %c", &option);
@@ -70,9 +70,9 @@ void start() {
             made_choice = true;
             random_AI = true;
         }
-        else if (option == 'H' || option == 'h') 
+        else if (option == 'S' || option == 's') 
         {
-            printf("The AI will be hard.\n");
+            printf("The AI will be slightly smarter.\n");
             made_choice = true;
             random_AI = false;
         }
@@ -142,58 +142,13 @@ void findRandomMove(char (*board)[COL_SIZE]) {
     num_spaces--;
 }
 
-/*
 void findBestMove(char (*board)[COL_SIZE]) {
-    int picked_row;
-    int best_col = -1;
-    int best_value = -1;
-
-    for (int col = 0; col < COL_SIZE; col++) {
-        int possible_row = -1;
-
-        for (int row = ROW_SIZE - 1; row >= 0; row--) {
-            char current_space = board[row][col];
-
-            if (current_space == ' ')
-                possible_row = row;
-        }
-
-        if (possible_row == -1)
-            continue;
-        
-        int current_space_value = findValue(board, col);
-        
-        if (current_space_value > best_value) {
-            best_col = col;
-            picked_row = possible_row;
-        }
-    }   
-
-    board[picked_row][best_col] = COM_MOVE;
-    num_spaces--;
-}
-*/
-
-void findBestMove(char (*board)[COL_SIZE]) {}
-
-int findValue(char board[ROW_SIZE][COL_SIZE], int chosen_col) {
-    return 0;
-}
-
-void AITurn(char (*board)[COL_SIZE]) {
-    printf("\n");
-    printf("COM Turn!\n");
-
-    if (random_AI) 
-        findRandomMove(board);
-    else 
-        findBestMove(board);
-}
-
-char isWinner(char board[ROW_SIZE][COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE; row++) {
         int num_com = 0;
         int num_user = 0;
+
+        int start_com = -1;
+        int start_user = -1;
 
         for (int col = 0; col < COL_SIZE; col++) {
             char space = board[row][col];
@@ -201,20 +156,34 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
             if (space == COM_MOVE) {
                 num_user = 0;
                 num_com++;
+
+                if (start_com == -1) {
+                    start_com = col;
+                }
+
+                start_user = -1;
             }
             else if (space == USER_MOVE) {
                 num_com = 0;
                 num_user++;
+                
+                if (start_user == -1) {
+                    start_user = col;
+                }
+
+                start_com = -1;
             }   
             else if (space == ' ') {
                 num_user = 0;
                 num_com = 0;
             }
                 
-            if (num_com >= 4) 
+            if (num_com >= 3) {
                 return COM_MOVE;
-            if (num_user >= 4) 
+            } 
+            if (num_user >= 3) {
                 return USER_MOVE;
+            }
         }
     }
 
@@ -346,6 +315,222 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 return COM_MOVE;
             else if (num_user >= 4)
                 return USER_MOVE;
+        }
+    }
+
+    num_spaces--;
+}
+
+int findValue(char board[ROW_SIZE][COL_SIZE], int chosen_col) {
+    return 0;
+}
+
+void AITurn(char (*board)[COL_SIZE]) {
+    printf("\n");
+    printf("COM Turn!\n");
+
+    if (random_AI) 
+        findRandomMove(board);
+    else 
+        findBestMove(board);
+}
+
+char isWinner(char board[ROW_SIZE][COL_SIZE]) {
+    for (int row = 0; row < ROW_SIZE; row++) {
+        int num_com = 0;
+        int num_user = 0;
+
+        for (int col = 0; col < COL_SIZE; col++) {
+            char space = board[row][col];
+
+            if (space == COM_MOVE) {
+                num_user = 0;
+                num_com++;
+            }
+            else if (space == USER_MOVE) {
+                num_com = 0;
+                num_user++;
+            }   
+            else if (space == ' ') {
+                num_user = 0;
+                num_com = 0;
+            }
+                
+            if (num_com >= 4) {
+                printf("1");
+                return COM_MOVE;
+            }
+            if (num_user >= 4) {
+                printf("1");
+                return USER_MOVE;
+            }
+        }
+    }
+
+    for (int col = 0; col < COL_SIZE; col++) {
+        int num_com = 0;
+        int num_user = 0;
+
+        for (int row = 0; row < ROW_SIZE; row++) {
+            char space = board[row][col];
+
+            if (space == COM_MOVE) {
+                num_user = 0;
+                num_com++;
+            }
+            if (space == USER_MOVE) {
+                num_com = 0;
+                num_user++;
+            }
+            if (space == ' ') {
+                num_user = 0;
+                num_com = 0;
+            }
+
+            if (num_com >= 4) {
+                printf("2");
+                return COM_MOVE;
+            }
+            if (num_user >= 4) {
+                printf("2");
+                return USER_MOVE;
+            }
+        }
+    }
+
+    for (int row = 0; row < ROW_SIZE - 3; row++) {
+        for (int col = 0; col < COL_SIZE; col++) {
+            int num_com = 0;
+            int num_user = 0;
+
+            char space = board[row][col];
+            
+            if (space == COM_MOVE)
+                num_com++;
+            else if (space == USER_MOVE)
+                num_user++;
+
+            if (col + 1 < COL_SIZE && row + 1 < ROW_SIZE) {
+                space = board[row + 1][col + 1];
+
+                if (space == COM_MOVE) {
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }  
+            else
+                continue;
+
+            if (col + 2 < COL_SIZE && row + 2 < ROW_SIZE) {
+                space = board[row + 2][col + 2];
+
+                if (space == COM_MOVE){
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }
+            else
+                continue;
+
+            if (col + 3 < COL_SIZE && row + 3 < ROW_SIZE) {
+                space = board[row + 3][col + 3];
+
+                if (space == COM_MOVE){
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }
+            else
+                continue;
+
+            if (num_com >= 4) {
+                printf("3");
+                return COM_MOVE;
+            }
+            else if (num_user >= 4) {
+                printf("3");
+                return USER_MOVE;
+            }
+        }
+    }
+
+    for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row--) {
+        for (int col = 0; col < COL_SIZE; col++) {
+            int num_com = 0;
+            int num_user = 0;
+
+            char space = board[row][col];
+            
+            if (space == COM_MOVE)
+                num_com++;
+            else if (space == USER_MOVE)
+                num_user++;
+
+            if (col - 1 < COL_SIZE && row - 1 < ROW_SIZE) {
+                space = board[row - 1][col - 1];
+
+                if (space == COM_MOVE){
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }
+            else
+                continue;
+
+            if (col - 2 < COL_SIZE && row - 2 < ROW_SIZE) {
+                space = board[row - 2][col - 2];
+
+                if (space == COM_MOVE){
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }
+            else
+                continue;
+
+            if (col - 3 < COL_SIZE && row - 3 < ROW_SIZE) {
+                space = board[row - 3][col - 3];
+
+                if (space == COM_MOVE){
+                    num_com++;
+                    num_user = 0;
+                }
+                else if (space == USER_MOVE){
+                    num_user++;
+                    num_com = 0;
+                }
+            }
+            else
+                continue;
+
+            if (num_com >= 4) {
+                printf("4");
+                return COM_MOVE;
+            }
+            else if (num_user >= 4) {
+                printf("4");
+                return USER_MOVE;
+            }
         }
     }
 
