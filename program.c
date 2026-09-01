@@ -142,6 +142,16 @@ void findRandomMove(char (*board)[COL_SIZE]) {
     num_spaces--;
 }
 
+bool filledBelow(char board[ROW_SIZE][COL_SIZE], int row, int col) {
+    for (int current = ROW_SIZE - 1; current > row; current--) {
+        char space = board[current][col];
+
+        if (space == ' ')
+            return false;
+    }
+    return true;
+}
+
 void findBestMove(char (*board)[COL_SIZE]) {
     for (int row = 0; row < ROW_SIZE; row++) {
         int num_com = 0;
@@ -185,14 +195,13 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 
             if (num_com >= 2) {
                 end_com = col + 1;
-                char space;
 
                 if (start_com >= 0) {
                     space = board[row][start_com];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (row == ROW_SIZE - 1 || filledBelow(board, row, start_com))) {
                         board[row][start_com] = COM_MOVE;
-                         printf("%i %i\n", start_com);
+                        printf("%i %i\n", start_com);
 
                         num_spaces--;
                         return;
@@ -202,7 +211,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_com < COL_SIZE) {
                     space = board[row][end_com];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (row == ROW_SIZE - 1 || filledBelow(board, row, end_com))) {
                         board[row][end_com] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -211,9 +220,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
             } 
             if (num_user >= 2) {
                 end_user = col + 1;
-                char space;
-
-                if (start_user >= 0) {
+    
+                if (start_user >= 0 && (row == ROW_SIZE - 1 || filledBelow(board, row, start_user))) {
                     space = board[row][start_user];
 
                     if (space == ' ') {
@@ -226,7 +234,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_user < COL_SIZE) {
                     space = board[row][end_user];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (row == ROW_SIZE - 1 || filledBelow(board, row, end_user))) {
                         board[row][end_user] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -235,6 +243,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
         }
     }
+
+    printf("passed cross");
 
     for (int col = 0; col < COL_SIZE; col++) {
         int num_com = 0;
@@ -246,7 +256,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
         int end_com = -1;
         int end_user = -1;
 
-        for (int row = 0; row < ROW_SIZE; row++) {
+        for (int row = ROW_SIZE - 1; row >= 0; row--) {
             char space = board[row][col];
 
             if (space == COM_MOVE) {
@@ -254,7 +264,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 num_com++;
 
                 if (start_com == -1) {
-                    start_com = col - 1;
+                    start_com = row + 1;
                 }
 
                 start_user = -1;
@@ -264,7 +274,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 num_user++;
                 
                 if (start_user == -1) {
-                    start_user = col - 1;
+                    start_user = row + 1;
                 }
 
                 start_com = -1;
@@ -275,48 +285,46 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
                 
             if (num_com >= 2) {
-                end_com = col + 1;
-                char space;
+                end_com = row - 1;
 
-                if (start_com >= 0) {
-                    space = board[row][start_com];
+                if (start_com < ROW_SIZE) {
+                    space = board[start_com][col];
 
                     if (space == ' ') {
-                        board[row][start_com] = COM_MOVE;
+                        board[start_com][col] = COM_MOVE;
                         num_spaces--;
                         return;
                     }
                 }
 
-                if (end_com < COL_SIZE) {
-                    space = board[row][end_com];
+                if (end_com >= 0) {
+                    space = board[end_com][col];
 
                     if (space == ' ') {
-                        board[row][end_com] = COM_MOVE;
+                        board[end_com][col] = COM_MOVE;
                         num_spaces--;
                         return;
                     }
                 }
             } 
             if (num_user >= 2) {
-                end_user = col + 1;
-                char space;
+                end_user = row - 1;
 
-                if (start_user >= 0) {
-                    space = board[row][start_user];
+                if (start_user < ROW_SIZE) {
+                    space = board[start_user][col];
 
                     if (space == ' ') {
-                        board[row][start_user] = COM_MOVE;
+                        board[start_user][col] = COM_MOVE;
                         num_spaces--;
                         return;
                     }
                 }
 
-                if (end_user < COL_SIZE) {
-                    space = board[row][end_user];
+                if (end_user >= 0) {
+                    space = board[end_user][col];
 
                     if (space == ' ') {
-                        board[row][end_user] = COM_MOVE;
+                        board[end_user][col] = COM_MOVE;
                         num_spaces--;
                         return;
                     }
@@ -324,6 +332,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
         }
     }
+
+    printf("passed long");
 
     for (int row = 0; row < ROW_SIZE - 3; row++) {
         for (int col = 0; col < COL_SIZE; col++) {
@@ -436,7 +446,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (start_com_col >= 0 && start_com_row >= 0) {
                     space = board[start_com_row][start_com_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (start_com_row == ROW_SIZE - 1 || filledBelow(board, start_com_row, start_com_col))) {
                         board[start_com_row][start_com_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -446,7 +456,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_com_col < COL_SIZE && end_com_row < ROW_SIZE) {
                     space = board[end_com_row][end_com_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (end_com_row == ROW_SIZE - 1 || filledBelow(board, end_com_row, end_com_col))) {
                         board[end_com_row][end_com_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -462,7 +472,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (start_user_col >= 0 && start_user_row >= 0) {
                     space = board[start_user_row][start_user_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (start_user_row == ROW_SIZE - 1 || filledBelow(board, start_user_row, start_user_col))) {
                         board[start_user_row][start_user_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -472,7 +482,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_user_col < COL_SIZE && end_user_row < ROW_SIZE) {
                     space = board[end_user_row][end_user_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (end_user_row == ROW_SIZE - 1 || filledBelow(board, end_user_row, end_user_col))) {
                         board[end_user_row][end_user_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -481,6 +491,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
         }
     }
+
+    printf("passed cross 1");
 
     for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row--) {
         for (int col = 0; col < COL_SIZE; col++) {
@@ -522,8 +534,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
                     start_user_col = 0;
 
                     if (start_com_row == -1 && start_com_col == -1) {
-                        start_com_row = row - 1;
-                        start_com_col = col - 1;
+                        start_com_row = row + 2;
+                        start_com_col = col - 2;
                     }
 
                     num_com++;
@@ -533,8 +545,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
                     start_com_col = 0;
 
                     if (start_user_row == -1 && start_user_col == -1) {
-                        start_user_row = row - 1;
-                        start_user_col = col - 1;
+                        start_user_row = row + 2;
+                        start_user_col = col - 2;
                     }
 
                     num_user++;
@@ -558,8 +570,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
                     start_user_col = 0;
 
                     if (start_com_row == -1 && start_com_col == -1) {
-                        start_com_row = row - 1;
-                        start_com_col = col - 1;
+                        start_com_row = row + 3;
+                        start_com_col = col - 3;
                     }
 
                     num_com++;
@@ -569,8 +581,8 @@ void findBestMove(char (*board)[COL_SIZE]) {
                     start_com_col = 0;
 
                     if (start_user_row == -1 && start_user_col == -1) {
-                        start_user_row = row - 1;
-                        start_user_col = col - 1;
+                        start_user_row = row + 3;
+                        start_user_col = col - 3;
                     }
 
                     num_user++;
@@ -586,14 +598,14 @@ void findBestMove(char (*board)[COL_SIZE]) {
             else
                 continue;
                 
-            if (num_com >= 2) {
-                end_com_col = col + 1;
-                end_com_row = row + 1;
+            if (num_com >= 3) {
+                end_com_col = col + num_com;
+                end_com_row = row - num_com;
 
                 if (start_com_col >= 0 && start_com_row >= 0) {
                     space = board[start_com_row][start_com_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (start_com_row == ROW_SIZE - 1 || filledBelow(board, start_com_row, start_com_col))) {
                         board[start_com_row][start_com_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -603,7 +615,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_com_col < COL_SIZE && end_com_row < ROW_SIZE) {
                     space = board[end_com_row][end_com_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (end_com_row == ROW_SIZE - 1 || filledBelow(board, end_com_row, end_com_col))) {
                         board[end_com_row][end_com_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -611,14 +623,14 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 }
             } 
 
-            if (num_user >= 2) {
-                end_user_col = col + 1;
-                end_user_row = row + 1;
+            if (num_user >= 3) {
+                end_user_col = col + num_user;
+                end_user_row = row - num_user;
 
                 if (start_user_col >= 0 && start_user_row >= 0) {
                     space = board[start_user_row][start_user_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (start_user_row == ROW_SIZE - 1 || filledBelow(board, start_user_row, start_user_col))) {
                         board[start_user_row][start_user_col] = COM_MOVE;
                         num_spaces--;
                         return;
@@ -628,7 +640,7 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 if (end_user_col < COL_SIZE && end_user_row < ROW_SIZE) {
                     space = board[end_user_row][end_user_col];
 
-                    if (space == ' ') {
+                    if (space == ' ' && (end_user_row == ROW_SIZE - 1 || filledBelow(board, end_user_row, end_user_col))) {
                         board[end_user_row][end_user_col] = COM_MOVE;
                         num_spaces--;
                         return;
