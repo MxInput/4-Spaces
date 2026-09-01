@@ -57,27 +57,29 @@ void start() {
             printf("Invalid Option: Try Again!\n");
     }
 
-    made_choice = false;
+    if (is_playing) {
+        made_choice = false;
 
-    printf("Would you like to play against easy or slightly smarter AI? (E/S)\n");
-    
-    while (!made_choice) {
-        scanf(" %c", &option);
+        printf("Would you like to play against easy or slightly smarter AI? (E/S)\n");
+        
+        while (!made_choice) {
+            scanf(" %c", &option);
 
-        if (option == 'E' || option == 'e') 
-        {
-            printf("The AI will be easy.\n");
-            made_choice = true;
-            random_AI = true;
+            if (option == 'E' || option == 'e') 
+            {
+                printf("The AI will be easy.\n");
+                made_choice = true;
+                random_AI = true;
+            }
+            else if (option == 'S' || option == 's') 
+            {
+                printf("The AI will be slightly smarter.\n");
+                made_choice = true;
+                random_AI = false;
+            }
+            else
+                printf("Invalid Option: Try Again!\n");
         }
-        else if (option == 'S' || option == 's') 
-        {
-            printf("The AI will be slightly smarter.\n");
-            made_choice = true;
-            random_AI = false;
-        }
-        else
-            printf("Invalid Option: Try Again!\n");
     }
 }
 
@@ -191,8 +193,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
                 num_com = 0;
             }
 
-            printf("%i %i\n", num_user, num_com);
-                
             if (num_com >= 2) {
                 end_com = col + 1;
 
@@ -201,7 +201,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
 
                     if (space == ' ' && (row == ROW_SIZE - 1 || filledBelow(board, row, start_com))) {
                         board[row][start_com] = COM_MOVE;
-                        printf("%i %i\n", start_com);
 
                         num_spaces--;
                         return;
@@ -243,8 +242,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
         }
     }
-
-    printf("passed cross");
 
     for (int col = 0; col < COL_SIZE; col++) {
         int num_com = 0;
@@ -332,8 +329,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
             }
         }
     }
-
-    printf("passed long");
 
     for (int row = 0; row < ROW_SIZE - 3; row++) {
         for (int col = 0; col < COL_SIZE; col++) {
@@ -492,8 +487,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
         }
     }
 
-    printf("passed cross 1");
-
     for (int row = ROW_SIZE - 1; row >= ROW_SIZE - 3; row--) {
         for (int col = 0; col < COL_SIZE; col++) {
             int num_com = 0;
@@ -650,7 +643,6 @@ void findBestMove(char (*board)[COL_SIZE]) {
         }
     }
 
-    printf("other options");
     findRandomMove(board);
 }
 
@@ -690,11 +682,9 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
             }
                 
             if (num_com >= 4) {
-                printf("1");
                 return COM_MOVE;
             }
             if (num_user >= 4) {
-                printf("1");
                 return USER_MOVE;
             }
         }
@@ -721,11 +711,9 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
             }
 
             if (num_com >= 4) {
-                printf("2");
                 return COM_MOVE;
             }
             if (num_user >= 4) {
-                printf("2");
                 return USER_MOVE;
             }
         }
@@ -801,11 +789,9 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 continue;
 
             if (num_com >= 4) {
-                printf("3");
                 return COM_MOVE;
             }
             else if (num_user >= 4) {
-                printf("3");
                 return USER_MOVE;
             }
         }
@@ -881,11 +867,9 @@ char isWinner(char board[ROW_SIZE][COL_SIZE]) {
                 continue;
 
             if (num_com >= 4) {
-                printf("4");
                 return COM_MOVE;
             }
             else if (num_user >= 4) {
-                printf("4");
                 return USER_MOVE;
             }
         }
